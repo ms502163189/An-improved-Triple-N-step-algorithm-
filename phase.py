@@ -7,7 +7,6 @@ The phase extraction methods in this work
 """
 import numpy as np
 import cv2
-from MLP_net import NeuralNetwork
 import torch,gc
 import os
 
@@ -239,51 +238,6 @@ class MPE(PE):
                 print(f"\t\t The mean increasing amount of phi:{np.mean(np.abs(delta_phase)):3g}")
         return self.phi1, T1
 
-class MPSP(PE):
-    def __init__(self, config):
-        super(MPSP, self).__init__(config)
-
-    def phase_extract(self, images):
-        print("进入MPSP方法")
-        device = torch.device("cuda") #使用gpu进行训练
-        gc.collect()
-        torch.cuda.empty_cache()#清楚cuda缓存
-        img1_0, img1_3, img1_4 = images[0][0], images[0][3], images[0][4]
-        img2_0, img2_1, img2_2 = images[1][0], images[1][1], images[1][2]
-        img3_0, img3_1, img3_2 = images[2][0], images[2][1], images[2][2]
-        print("np.size(img1_0)", np.size(img1_0))
-        inputs = np.stack([img1_0, img1_3, img1_4, img2_0, img2_1, img2_2, img3_0, img3_1, img3_2]).astype(np.float32)
-        model = NeuralNetwork(self._c)
-        model = model.to(device)
-        print(self._c.model_dir)
-        checkpoint = torch.load(os.path.join(self._c.model_dir,"best_model"))
-        model.load_state_dict(checkpoint['model'])
-        inputs = torch.Tensor(inputs)
-        # print("self._c.camera_size[1]",self._c.camera_size[1])
-        # print("self._c.camera_size[0]", self._c.camera_size[0])
-        inputs1 = inputs.expand([1,9,self._c.camera_size[1],self._c.camera_size[0]])
-        # last_res = torch.zeros((((1,4,50,1920))))
-        # last_res = last_res.to(device)
-        epoch = 0 #随便取一个
-        batch = 0
-        train_or_test = 0
-        output_predict = model(inputs1,epoch,batch, train_or_test)
-        chaifen1,chaifen2,chaifen3,chaifen4 = output_predict.chunk(5,1) #四维tensor变量降为二维tensor变量
-        chaifen1 = chaifen1.squeeze().cpu().detach().numpy()                   #二维tensor变量变为numpy类型
-        chaifen2 = chaifen2.squeeze().cpu().detach().numpy()
-        chaifen3 = chaifen3.squeeze().cpu().detach().numpy()
-        chaifen4 = chaifen4.squeeze().cpu().detach().numpy()
-
-        images[0][1] = chaifen1
-        images[0][2] = chaifen2
-        images[0][5] = chaifen3
-        images[0][6] = chaifen4
-        # print("np.size(images[0][1])",np.size(images[0][1]))
-
-        self.phi1 = self.psi_extract(images[0])
-        
-        return self.phi1
-
 def phase_wrapper(cfg, method):
-    assert method in ["PE","LLS","CFPE","MPE","MPSP"]
+    assert method in ["PE","LLS","CFPE","MPE"]
     return eval(method)(cfg)

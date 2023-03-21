@@ -122,86 +122,10 @@ class Fringes_Harmonics(Fringes):
         y = A+B*np.cos(phi)
         h = self._c.C*np.cos(2*phi)+self._c.D*np.cos(3*phi)+self._c.E*np.cos(4*phi)+self._c.F*np.cos(5*phi)
         return np.round(img+y+h)
-    
-class Fringes_Harmonics_have_noise(Fringes):
-    def __init__(self, config):
-        super().__init__(config)
-    def generate_one(self, zeta, T, A, B):
-        W, H = self._c.pattern_size
-        img = np.zeros([H, W])
-        # x = np.linspace(0,W-1,W)
-        x = np.linspace(0,W-1,W) if self._c.hv == "h" else np.linspace(0,H-1,H).reshape(-1,1)
-#         y = np.linspace(0,H-1,H).reshape(-1,1) if self._c.hv == "h" np.linspace(0,W-1,W)
-        phi = np.zeros(len(x))
-        y = np.zeros(len(x))
-        h = np.zeros(len(x))
-        order = 0
-        out_img = np.zeros([H, W])
-#         aa = self._c.coefficient[0][0]
-#         bb = self._c.coefficient[0][1]
-#         cc = self._c.coefficient[0][2]
-#         dd = self._c.coefficient[0][3]
-#         ee = self._c.coefficient[0][4]
-#         ff = self._c.coefficient[0][5]
-        
-#         for index in range(len(x)):
-# #             print("index : {}".format(index))
-# #             print("x[index] : {}".format(x[index]))
-#             phi[index] = 2 * np.pi * x[index] / T + zeta
-#             y[index] = aa + bb * np.cos(phi[index])
-#             h[index] = cc * np.cos(2 * phi[index]) + dd * np.cos(3 * phi[index]) + ee * np.cos(4 * phi[index]) + ff * np.cos(5 * phi[index])
-#             for i in range(int(len(self._c.y)/10)):
-#                 if (y[index] + h[index] >= i * 10 and y[index] + h[index] < (i + 1) * 10):
-#                     time = i
-# #                     print("更新前：y[index] + h[index] : {}".format(y[index] + h[index]))
-# #                     print("time : {}".format(time))
-#                     break
-#             a = self._c.coefficient[time][0]
-#             b = self._c.coefficient[time][1]
-#             c = self._c.coefficient[time][2]
-#             d = self._c.coefficient[time][3]
-#             e = self._c.coefficient[time][4]
-#             f = self._c.coefficient[time][5]
-#             y[index] = a + b * np.cos(phi[index])
-#             h[index] = c * np.cos(2 * phi[index]) + d * np.cos(3 * phi[index]) + e * np.cos(4 * phi[index]) + f * np.cos(5 * phi[index])
-# #             print("更新后：y[index] + h[index] : {}".format(y[index] + h[index]))
-#         out_img = np.round(img + y + h)
-# #         print("out_img")
-# #         print(out_img)
-        
-#         print("len(x) : {}".format(len(x)))
-#         print("H : {}".format(H))
-        a = self._c.coefficient[0][0]
-        b = self._c.coefficient[0][1]
-        c = self._c.coefficient[0][2]
-        d = self._c.coefficient[0][3]
-        e = self._c.coefficient[0][4]
-        f = self._c.coefficient[0][5]
-        last_order = 0
-        for index in range(len(x)):
-            phi[index] = 2 * np.pi * x[index] / T + zeta
-            for j in range(H):
-                order = round(j//40)
-                if (j != 0 and order != last_order):
-#                 print("j : {}".format(j))
-#                 print("time : {}".format(time))
-                    a = self._c.coefficient[order][0]
-                    b = self._c.coefficient[order][1]
-                    c = self._c.coefficient[order][2]
-                    d = self._c.coefficient[order][3]
-                    e = self._c.coefficient[order][4]
-                    f = self._c.coefficient[order][5]
-                    last_order = order
-                y[index] = a + b * np.cos(phi[index])
-                h[index] = c * np.cos(2 * phi[index]) + d * np.cos(3 * phi[index]) + e * np.cos(4 * phi[index]) + f * np.cos(5 * phi[index])
-#             print("更新后：y[index] + h[index] : {}".format(y[index] + h[index]))
-                out_img[j][index] = np.round(img[j][index] + y[index] + h[index])
-    
-        return out_img
 
 def fringe_wrapper(cfg, method):
-    assert method in ["fringe","gamma","harmonic","harmonics_have_noise","seg"]
-    d = {"fringe":Fringes,"gamma":Fringes_Gamma,"harmonic":Fringes_Harmonics,"harmonics_have_noise":Fringes_Harmonics_have_noise,"seg":Fringes_Seg}
+    assert method in ["fringe","gamma","harmonic","seg"]
+    d = {"fringe":Fringes,"gamma":Fringes_Gamma,"harmonic":Fringes_Harmonics,"seg":Fringes_Seg}
     return d[method](cfg)
     
 def projection_fringes_save(step0,step1,step2):
@@ -273,12 +197,5 @@ if __name__ == '__main__':
     projection_fringes_save(12,12,12)
     # # generate 3-step 3-frequency images
     projection_fringes_save(3,3,3)
-    # # generate 4-step 3-frequency images
-    # projection_fringes_save(4,4,4)
-    # # generate 7-step 3-frequency images
-    # projection_fringes_save(7,7,7)
-    # # generate 7-4-3-step 3-frequency images
-    # projection_fringes_save(7,4,3)
-
     # generate 9-9-9-step 3-frequency images
     projection_fringes_save(9,9,9)

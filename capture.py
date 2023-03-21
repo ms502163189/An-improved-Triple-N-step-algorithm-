@@ -11,7 +11,6 @@ from config import config
 from projector import Projector
 from camera import HK_Camera
 from fringes import Fringes
-from MLP_net import del_files
 
 class ImageReader():
     def __init__(self, config):
@@ -167,6 +166,9 @@ def wait_to_begin():
             break
     return wait_proj
 
+def dir_is_or_not_exist(dir):
+    if not os.path.exists(dir):
+        os.makedirs(dir)
 
 if __name__ == '__main__':
     from config import config
@@ -181,11 +183,7 @@ if __name__ == '__main__':
         cfg.steps = [9, 9, 9]
         cfg.pattern_path = "./data/patterns/999-step/"
         cfg.measure_path = "./data/recordings/2/9-step/"
-        # cfg.measure_path = "./data/hdr_images/"   # 如果是hdr实验，文件夹要换成这个
-        # projector = Projector(cfg)
-        if not os.path.exists(cfg.measure_path):
-            os.makedirs(cfg.measure_path)
-        # print("cfg.measure_path  ",cfg.measure_path )
+        dir_is_or_not_exist(cfg.measure_path)
         cap = Capture(cfg)
         root = Path(cfg.measure_path)
         root.mkdir(parents=True, exist_ok=True)
@@ -196,9 +194,7 @@ if __name__ == '__main__':
         cfg.steps = [20, 20, 20]
         cfg.pattern_path = "./data/patterns/202020-step/"
         cfg.measure_path = "./data/recordings/2/20-step/"
-        # projector = Projector(cfg)
-        if not os.path.exists(cfg.measure_path):
-            os.makedirs(cfg.measure_path)
+        dir_is_or_not_exist(cfg.measure_path)
         # print("cfg.measure_path  ",cfg.measure_path )
         cap = Capture(cfg)
         root = Path(cfg.measure_path)
@@ -210,66 +206,24 @@ if __name__ == '__main__':
         cfg.steps = [12, 12, 12]
         cfg.pattern_path = "./data/patterns/121212-step/"
         cfg.measure_path = "./data/recordings/2/12-step/"
-        # projector = Projector(cfg)
-        if not os.path.exists(cfg.measure_path):
-            os.makedirs(cfg.measure_path)
-        # print("cfg.measure_path  ",cfg.measure_path )
+        dir_is_or_not_exist(cfg.measure_path)
         cap = Capture(cfg)
         root = Path(cfg.measure_path)
         root.mkdir(parents=True, exist_ok=True)
         print("root", root)
         cap.capture_one(str(root) + f"/{count:0>2d}", hv="h")  # 20-step
         cap.exit1()
-        #
-        # cfg.steps = [7, 7, 7]
-        # cfg.pattern_path = "./data/patterns/777-step/"
-        # cfg.measure_path = "./data/recordings/2/7-step/"
-        # # projector = Projector(cfg)
-        # if not os.path.exists(cfg.measure_path):
-        #     os.makedirs(cfg.measure_path)
-        # cap = Capture(cfg)
-        # root = Path(cfg.measure_path)
-        # root.mkdir(parents=True, exist_ok=True)
-        # print("root", root)
-        # cap.capture_one(str(root) + f"/{count:0>2d}", hv="h")  # 20-step
-        # cap.exit1()
-        # cfg.steps = [4, 4, 4]
-        # cfg.pattern_path = "./data/patterns/444-step/"
-        # cfg.measure_path = "./data/recordings/2/4-step/"
-        # # projector = Projector(cfg)
-        # if not os.path.exists(cfg.measure_path):
-        #     os.makedirs(cfg.measure_path)
-        # cap = Capture(cfg)
-        # root = Path(cfg.measure_path)
-        # root.mkdir(parents=True, exist_ok=True)
-        # print("root", root)
-        # cap.capture_one(str(root) + f"/{count:0>2d}", hv="h")  # 20-step
-        # cap.exit1()
+
         cfg.steps = [3, 3, 3]
         cfg.pattern_path = "./data/patterns/333-step/"
         cfg.measure_path = "./data/recordings/2/3-step/"
-
-        # projector = Projector(cfg)
-        if not os.path.exists(cfg.measure_path):
-            os.makedirs(cfg.measure_path)
+        dir_is_or_not_exist(cfg.measure_path)
         cap = Capture(cfg)
         root = Path(cfg.measure_path)
         root.mkdir(parents=True, exist_ok=True)
         print("root", root)
         cap.capture_one(str(root) + f"/{count:0>2d}", hv="h")  # 20-step
         cap.exit1()
-        # cfg.steps = [7, 4, 3]
-        # cfg.pattern_path = "./data/patterns/743-step/"
-        # cfg.measure_path = "./data/recordings/2/7-4-3-step/"
-        # # projector = Projector(cfg)
-        # if not os.path.exists(cfg.measure_path):
-        #     os.makedirs(cfg.measure_path)
-        # cap = Capture(cfg)
-        # root = Path(cfg.measure_path)
-        # root.mkdir(parents=True, exist_ok=True)
-        # print("root", root)
-        # cap.capture_one(str(root) + f"/{count:0>2d}", hv="h")  # 20-step
-        # cap.exit1()
         count += 1
     cap.exit()
 
